@@ -1,5 +1,5 @@
-//forma de crear variables en la nueva actualizacion de js es6 con let
-let producto="monitor"
+//forma de crear variables 
+var producto="monitor"
 
 //las variables se pueden reasignar
 producto="teclado"
@@ -10,7 +10,7 @@ producto=20
 console.log(producto)
 
 //se puede inicializar una variable y asignarle valor despues
-let disponible
+var disponible
 disponible=false
 console.log(disponible)
 
