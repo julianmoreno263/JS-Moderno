@@ -3,3 +3,5 @@ let producto="monitor"
 
 //reasignar el valor
 producto="teclado"
+
+console.log(producto)
