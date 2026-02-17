@@ -57,22 +57,36 @@ year.addEventListener("change",(e)=>{
 
 minimo.addEventListener("change",(e)=>{
     datosBusqueda.minimo=e.target.value
+
+    filtrarAuto()
 })
 
 maximo.addEventListener("change",(e)=>{
     datosBusqueda.maximo=e.target.value
+
+    filtrarAuto()
+
 })
 
 puertas.addEventListener("change",(e)=>{
-    datosBusqueda.puertas=e.target.value
+    datosBusqueda.puertas=parseInt(e.target.value)
+
+    filtrarAuto()
+
 })
 
 transmision.addEventListener("change",(e)=>{
     datosBusqueda.transmision=e.target.value
+
+    filtrarAuto()
+
 })
 
 color.addEventListener("change",(e)=>{
     datosBusqueda.color=e.target.value
+
+    filtrarAuto()
+
 })
 
 
@@ -127,11 +141,24 @@ function llenarSelect(params) {
 
 //funcion que filtra con base en la busqueda, aqui se usa el concepto de funcion de alto nivel,las cuales son funciones que toman otra funcion, por ejemplo filter() es una funcion de alto nivel (o llamadas de orden superior) porque se le debe pasar una funcion como argumento. Ademas filter me permite hacer encadenamiento,por lo que e smuy util para pasar diferentes funciones al tiempo y asi filtrar multiples valores.
 function filtrarAuto(params) {
-    const resultado=autos.filter(filtrarMarca).filter(filtrarYear)
+    const resultado=autos.filter(filtrarMarca).filter(filtrarYear).filter(filtrarMinimo)
+    .filter(filtrarMaximo).filter(filtrarPuertas).filter(filtrarTransmision).filter(filtrarColor)
 
-    // console.log(resultado)
+    //aqui resultado.length  significa si el resultado tiene algo
+    if (resultado.length) {
+        mostrarAutos(resultado)
+    } else {
+        noResultado()
+    }
+}
 
-    mostrarAutos(resultado)
+function noResultado(params) {
+    limpiarHTML()
+
+    const noResultado=document.createElement("div")
+    noResultado.classList.add("alerta","error")
+    noResultado.textContent="No hay resultados. Intenta con otros términos de búsqueda"
+    resultado.appendChild(noResultado)
 }
 
 function filtrarMarca(auto) {
@@ -151,3 +178,51 @@ function filtrarYear(auto) {
 
     return auto
 }
+
+//filtra por los autos cuyo precio minimo sea el que se seleccione
+function filtrarMinimo(auto) {
+    const {minimo}=datosBusqueda
+    if (minimo) {
+        return auto.precio>=minimo
+    }
+
+    return auto
+}
+
+//filtra por los autos cuyo precio maximo sea el que se seleccione
+function filtrarMaximo(auto) {
+    const {maximo}=datosBusqueda
+    if (maximo) {
+        return auto.precio<=maximo
+    }
+
+    return auto
+}
+
+function filtrarPuertas(auto) {
+    const {puertas}=datosBusqueda
+    if (puertas) {
+        return auto.puertas===puertas
+    }
+
+    return auto
+}
+
+function filtrarTransmision(auto) {
+    const {transmision}=datosBusqueda
+    if (transmision) {
+        return auto.transmision===transmision
+    }
+
+    return auto
+}
+
+function filtrarColor(auto) {
+    const {color}=datosBusqueda
+    if (color) {
+        return auto.color===color
+    }
+
+    return auto
+}
+
