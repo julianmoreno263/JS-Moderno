@@ -29,6 +29,13 @@ class Presupuesto{
     nuevoGasto(gasto){
         this.gastos=[...this.gastos, gasto]
         console.log(this.gastos)
+        this.calcularRestante()
+    }
+
+    calcularRestante(){
+        //usamos primero reduce() para ir capturando en un array lo gastado,se le pasan dos argumentos, el total o acumulado y el objeto actual
+        const gastado=this.gastos.reduce((total,gasto)=>total+gasto.cantidad,0)
+        this.restante=this.presupuesto-gastado
     }
 }
 
@@ -65,6 +72,45 @@ class UI {
         setTimeout(() => {
             divMensaje.remove()
         }, 3000);
+    }
+
+    agregarGastoListado(gastos){
+
+        this.limpiarHTML()//elimina el html previo
+
+        //iterar sobre los gastos
+        gastos.forEach(gasto => {
+            const {cantidad,nombre,id}=gasto
+
+            //crear un li
+            const nuevoGasto=document.createElement("li")
+            nuevoGasto.className="list-group-item d-flex justify-content-between align-items-center"
+            nuevoGasto.dataset.id=id
+
+            //agregar el html del gasto
+            nuevoGasto.innerHTML=`${nombre} <span class="badge badge-primary badge-pill">$ ${cantidad}</span>`
+
+
+            //boton para borrar el gasto
+            const btnBorrar=document.createElement("button")
+            btnBorrar.classList.add("btn","btn-danger","borrar-gasto")
+            btnBorrar.innerHTML="Borrar &times;"
+            nuevoGasto.appendChild(btnBorrar)
+
+            //agregar al html
+            gastoListado.appendChild(nuevoGasto)
+        });
+    }
+
+    limpiarHTML(){
+        while (gastoListado.firstChild) {
+            gastoListado.removeChild(gastoListado.firstChild)
+        }
+    }
+
+    actualizarRestante(restante){
+        document.querySelector("#restante").textContent=restante
+
     }
 }
 
@@ -111,6 +157,15 @@ function agregarGasto(e) {
 
     //mostrar mensaje cuando se crea un nuevo gasto y reinicia el formulario
     ui.imprimirAlerta("Gasto agregado correctamente")
+
+    //Imprimir los gastos y el valor del restante
+    const {gastos,restante}=presupuesto
+    ui.agregarGastoListado(gastos)
+
+    ui.actualizarRestante(restante)
+
+
+
     formulario.reset()
 
     
