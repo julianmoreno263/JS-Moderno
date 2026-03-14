@@ -40,7 +40,50 @@ function submitCita(e) {
 
     //validacion del formulario, con Object.values me regresa un array pero solo con los valores del objeto, y con el array method some() podemos validar si hay un string vacio junto con trim() y que nos saque una alerta, osea se validamos de forma mas general. trim() quita espacios en blanco al inicio o al final si el usuario los pone y asi valida el input correctamente
     if (Object.values(citaObj).some(valor=>valor.trim()==="")) {
-        console.log("Todos los campos son obligatorios")
+        const notificacion=new Notificacion({
+            texto:"Todos los campos son obligatorios",
+            tipo:"error"
+        })
+
+        notificacion.mostrar()
+
         return
+    }
+}
+
+
+//CLASES
+class Notificacion{
+
+    //el constructor recibira un objeto
+    constructor({texto,tipo}){
+        this.texto=texto
+        this.tipo=tipo
+
+    }
+
+    mostrar(){
+        //crear la notificacion
+        const alerta=document.createElement("div")
+        alerta.classList.add("text-center","w-full","p-3","text-white","my-5","alert","uppercase","font-bold","text-sm")
+
+        //eliminar alertas duplicadas, utilizamos la forma moderna que es con un ? despues del elemento para preguntar si existe ese elemento,parecido al ternario, esto se llama encadenamiento opcional
+        const alertaPrevia=document.querySelector(".alert")
+        alertaPrevia?.remove()//si existe ese elemento lo remueve
+
+
+        //si es de tipo error agrega una clase
+        this.tipo==="error" ? alerta.classList.add("bg-red-500") : alerta.classList.add("bg-green-500")
+
+        //le agregamos el texto
+        alerta.textContent=this.texto
+
+        //insertamos en el DOM en el div padre que contiene al formulario, en el before se le pasan 2 argumentos,el elemento que queremos insertar (alerta) y el elemento anterior donde lo insertaremos,osea antes del formulario
+        formulario.parentElement.insertBefore(alerta,formulario)
+
+        //quitar despues de 5seg
+        setTimeout(() => {
+            alerta.remove()
+        }, 3000);
     }
 }
