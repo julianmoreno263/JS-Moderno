@@ -9,6 +9,8 @@ const sintomasInput=document.querySelector("#sintomas")
 
 const formulario=document.querySelector("#formulario-cita")
 
+const contenedorCitas=document.querySelector("#citas")
+
 //eventos
 
 //evento para que lo que se vaya escribiendo en el input se guarde en el objeto, hay dos eventos que nos sirven para esto, el input y el change,ambos hacen lo mismo,utilizamos el change. Al escribir en el input y salirme de ese input se ve reflejado lo que uno escribe. Para hacer este evento mas dinamico, creamos una funcion y dentro de ella tomamos el atributo name de cada input entre llaves[] y capturamos los valores con e.target.value,asi es mas general y no nos obliga a hacer por cada propiedad un evento. Asi se detecta desde donde estoy escribiendo y guarda el correspondiente valor en el objeto
@@ -28,29 +30,6 @@ const citaObj={
     fecha:"",
     sintomas:"",
 }
-
-
-//funciones
-function datosCita(e){
-    citaObj[e.target.name]=e.target.value
-}
-
-function submitCita(e) {
-    e.preventDefault()
-
-    //validacion del formulario, con Object.values me regresa un array pero solo con los valores del objeto, y con el array method some() podemos validar si hay un string vacio junto con trim() y que nos saque una alerta, osea se validamos de forma mas general. trim() quita espacios en blanco al inicio o al final si el usuario los pone y asi valida el input correctamente
-    if (Object.values(citaObj).some(valor=>valor.trim()==="")) {
-        const notificacion=new Notificacion({
-            texto:"Todos los campos son obligatorios",
-            tipo:"error"
-        })
-
-        notificacion.mostrar()
-
-        return
-    }
-}
-
 
 //CLASES
 class Notificacion{
@@ -87,3 +66,89 @@ class Notificacion{
         }, 3000);
     }
 }
+
+
+//cada cita es un objeto pero estaran dentro de un array
+class AdminCitas{
+    constructor(){
+        this.citas=[]
+
+        console.log(this.citas)
+    }
+
+    agregar(cita){
+        this.citas=[...this.citas,cita]
+        this.mostrar()
+
+    }
+
+    mostrar(){
+        //limpiar html previo
+        while (contenedorCitas.firstChild) {
+            contenedorCitas.removeChild(contenedorCitas.firstChild)
+        }
+
+        //generando las citas
+        this.citas.forEach(cita => {
+            const divCita = document.createElement('div');
+            divCita.classList.add('mx-5', 'my-10', 'bg-white', 'shadow-md', 'px-5', 'py-10' ,'rounded-xl', 'p-3');
+
+            const paciente = document.createElement('p');
+            paciente.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
+            paciente.innerHTML = `<span class="font-bold uppercase">Paciente: </span> ${cita.paciente}`;
+
+            const propietario = document.createElement('p');
+            propietario.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
+            propietario.innerHTML = `<span class="font-bold uppercase">Propietario: </span> ${cita.propietario}`;
+
+            const email = document.createElement('p');
+            email.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
+            email.innerHTML = `<span class="font-bold uppercase">E-mail: </span> ${cita.email}`;
+
+            const fecha = document.createElement('p');
+            fecha.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
+            fecha.innerHTML = `<span class="font-bold uppercase">Fecha: </span> ${cita.fecha}`;
+
+            const sintomas = document.createElement('p');
+            sintomas.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
+            sintomas.innerHTML = `<span class="font-bold uppercase">Síntomas: </span> ${cita.sintomas}`;
+
+            // Agregar al HTML
+            divCita.appendChild(paciente);
+            divCita.appendChild(propietario);
+            divCita.appendChild(email);
+            divCita.appendChild(fecha);
+            divCita.appendChild(sintomas);
+            contenedorCitas.appendChild(divCita);
+        });    
+       
+    }
+}
+
+
+//funciones
+function datosCita(e){
+    citaObj[e.target.name]=e.target.value
+}
+
+const citas=new AdminCitas()
+
+function submitCita(e) {
+    e.preventDefault()
+
+    //validacion del formulario, con Object.values me regresa un array pero solo con los valores del objeto, y con el array method some() podemos validar si hay un string vacio junto con trim() y que nos saque una alerta, osea se validamos de forma mas general. trim() quita espacios en blanco al inicio o al final si el usuario los pone y asi valida el input correctamente
+    if (Object.values(citaObj).some(valor=>valor.trim()==="")) {
+        const notificacion=new Notificacion({
+            texto:"Todos los campos son obligatorios",
+            tipo:"error"
+        })
+
+        notificacion.mostrar()
+
+        return
+    }
+
+    citas.agregar(citaObj)
+}
+
+
