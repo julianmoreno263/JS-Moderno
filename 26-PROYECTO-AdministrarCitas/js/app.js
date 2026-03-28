@@ -8,6 +8,7 @@ const fechaInput=document.querySelector("#fecha")
 const sintomasInput=document.querySelector("#sintomas")
 
 const formulario=document.querySelector("#formulario-cita")
+const formularioInput=document.querySelector("#formulario-cita input[type='submit']")
 
 const contenedorCitas=document.querySelector("#citas")
 
@@ -86,10 +87,31 @@ class AdminCitas{
 
     }
 
+    editar(citaActualizada){
+        //utilizamos map(),foreach solo itera,pero map modifica la informacion y regresa un  array nuevo
+
+        //este codigo compara cada cita que haya en el array citas por su id,si hay una cita con el mismo id de la citaActualizada que pasamos entonces reescribimos esa cita con esa citaActualizada,si no es igual dejamos la cita como esta
+        this.citas=this.citas.map(cita=>cita.id===citaActualizada.id ? citaActualizada : cita)
+        this.mostrar()
+    }
+
+    eliminar(id){
+        //aqui con filter nos traemos todas las citas que tengan un id diferente al que le estamos pasando y genera un array nuevo
+        this.citas=this.citas.filter(cita=>cita.id!==id)
+        this.mostrar()
+
+    }
+
     mostrar(){
         //limpiar html previo
         while (contenedorCitas.firstChild) {
             contenedorCitas.removeChild(contenedorCitas.firstChild)
+        }
+
+        //comprobar si hay citas
+        if (this.citas.length===0) {
+            contenedorCitas.innerHTML='<p class="text-xl mt-5 mb-10 text-center">No Hay Pacientes</p>'
+            return
         }
 
         //generando las citas
@@ -132,6 +154,9 @@ class AdminCitas{
             const btnEliminar = document.createElement('button');
             btnEliminar.classList.add('py-2', 'px-10', 'bg-red-600', 'hover:bg-red-700', 'text-white', 'font-bold', 'uppercase', 'rounded-lg', 'flex', 'items-center', 'gap-2');
             btnEliminar.innerHTML = 'Eliminar <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+            btnEliminar.onclick=()=>{
+                this.eliminar(cita.id)
+            }
 
             //crear contenedor para los botones
             const contenedorBotones=document.createElement("div")
@@ -176,7 +201,13 @@ function submitCita(e) {
     }
 
     if (editando) {
-        console.log("editando registro")
+        citas.editar({...citaObj})
+        const notificacionEdicion=new Notificacion({
+        texto:"Guardado correctamente",
+        tipo:"exito"
+        })
+
+        notificacionEdicion.mostrar()
     }else{
         citas.agregar({...citaObj})
         const notificacionExito=new Notificacion({
@@ -189,6 +220,8 @@ function submitCita(e) {
 
     formulario.reset()
     reiniciarObjetoCita()
+    formularioInput.value="Registrar Paciente"
+    editando=false
     
 }
 
@@ -230,5 +263,7 @@ function cargarEdicion(cita) {
     sintomasInput.value=cita.sintomas
 
     editando=true
+
+    formularioInput.value="Guardar Cambios"
 }
 
